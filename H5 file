@@ -1,4 +1,4 @@
-#H5 file
+#Model
 # data pre-processing
 import os
 import numpy as np
@@ -52,8 +52,6 @@ datagen = ImageDataGenerator(
 datagen.fit(X_train)
 
 
-
-
 # model train and save
 # Define the model
 model = Sequential([
@@ -74,8 +72,6 @@ model.compile(optimizer=Adam(lr=0.001), loss='categorical_crossentropy', metrics
 
 # Train the model
 history = model.fit(datagen.flow(X_train, y_train, batch_size=32), validation_data=(X_val, y_val), epochs=50, verbose=1)
-
-
 
 
 # model evaluation
@@ -118,4 +114,4 @@ plt.ylabel('Accuracy')
 plt.legend(loc='upper left')
 
 plt.show()
-#
+
