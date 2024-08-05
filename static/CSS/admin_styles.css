@@ -1,0 +1,135 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    margin-left: 150px;
+
+}
+
+
+h1, h2 {
+    text-align: center;
+    color: #35424a;
+    padding: 20px 0;
+}
+
+form {
+    background: #ffffff;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: #e8491d 1px solid;
+    margin-left: 35%;
+    margin-right: 35%;
+    margin-top: 5px;
+}
+
+
+form .form-group {
+    margin-bottom: 1px;
+
+}
+form label {
+    display: block;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+
+form input[type="text"], form input[type="password"], form input[type="number"], form select, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+form button {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.1em;
+    padding: 15px;
+    margin: 10px 0;
+    margin-left: 15px;
+    margin-right: 15px;
+    border-radius: 5px;
+    border: #0056b3;
+    background-color: #e9ecef;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+form button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+form button:active {
+    background-color: #0056b3;
+}
+
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background: #ffffff;
+    margin-bottom: 10px;
+    padding: 10px;
+    
+}
+
+ul li form {
+    display: inline;
+}
+
+ul li form button {
+    background-color: #e8491d;
+}
+
+ul li form button:hover {
+    background-color: #35424a;
+}
+
+a {
+    display: inline-block;
+    text-decoration: none;
+    color: #35424a;
+    padding: 10px 20px;
+    border: #e8491d 1px solid;
+    margin-top: 10px;
+    background: #ffffff;
+
+}
+
+a:hover {
+    background: #35424a;
+    color: #ffffff;
+}
+
+.alert {
+    padding: 20px;
+    background-color: #f44336;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.alert.success {
+    background-color: #4CAF50;
+}
+
+.alert.info {
+    background-color: #2196F3;
+}
+
+.alert.warning {
+    background-color: #ff9800;
+}
+

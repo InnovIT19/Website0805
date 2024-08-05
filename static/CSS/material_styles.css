@@ -1,0 +1,48 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+.container {
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    max-width: 90%;
+    width: 100%;
+}
+.materials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.material {
+    flex: 0 0 18%;
+    text-align: center;
+    margin: 5px;
+}
+.material img {
+    width: 50%;
+    height: auto;
+    border-radius: 10px;
+}
+.material h2 {
+    margin: 10px 0 5px;
+    font-size: 1em;
+}
+.material p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+.arrow {
+    cursor: pointer;
+    font-size: 2em;
+    padding: 0 20px;
+    user-select: none;
+}
+
