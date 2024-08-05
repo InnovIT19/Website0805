@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Gender</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            background: url('../static/images/03.webp') no-repeat center center fixed;
+            background-size: 1600px 620px;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .gender-container {
+            display: flex;
+            justify-content: space-around;
+            width: 60%;
+            margin-bottom: 20px;
+        }
+        .gender-option {
+            cursor: pointer;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 150px;
+        }
+        .gender-option:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        .gender-option img {
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .gender-option p {
+            font-size: 1.2em;
+            margin: 0;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            font-size: 18px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .success {
+            background: #28a745;
+        }
+        .error {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Your Gender</h1>
+    <div class="gender-container">
+        <div class="gender-option" id="female-option">
+            <img src="../static/images/female.jpeg" alt="Female" width="100">
+            <p>Female</p>
+        </div>
+        <div class="gender-option" id="male-option">
+            <img src="../static/images/male.jpeg" alt="Male" width="100">
+            <p>Male</p>
+        </div>
+    </div>
+    <div class="message success" id="success-message"></div>
+    <div class="message error" id="error-message"></div>
+
+    <script>
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+
+        function displayMessage(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        function startListening() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript.toLowerCase();
+                if (speechResult.includes('female')) {
+                    document.getElementById('female-option').click();
+                } else if (speechResult.includes('male')) {
+                    document.getElementById('male-option').click();
+                } else {
+                    displayMessage(errorMessage, 'Please say "Female" or "Male"');
+                }
+            };
+
+            recognition.onerror = (event) => {
+                displayMessage(errorMessage, 'Error occurred in recognition: ' + event.error);
+            };
+
+            recognition.onend = () => {
+                recognition.start(); // Restart recognition after it ends
+            };
+        }
+
+        function selectGender(gender) {
+            const phoneNumber = localStorage.getItem('phone_number'); // Retrieve phone number from local storage
+
+            if (!phoneNumber) {
+                displayMessage(errorMessage, 'Phone number not found. Please register again.');
+                window.location.href = '/register';
+                return;
+            }
+
+            fetch('/gender', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone_number: phoneNumber, gender: gender }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    displayMessage(successMessage, data.message);
+                    setTimeout(() => window.location.href = '/user_login', 1000); // Redirect to user_login.html after 1 second
+                } else {
+                    displayMessage(errorMessage, data.error);
+                }
+            })
+            .catch((error) => {
+                displayMessage(errorMessage, 'Error: ' + error);
+                console.error('Error:', error);
+            });
+        }
+
+        document.getElementById('female-option').addEventListener('click', () => {
+            selectGender('female');
+        });
+
+        document.getElementById('male-option').addEventListener('click', () => {
+            selectGender('male');
+        });
+
+        window.onload = startListening;
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Category</title>
+    <link rel="stylesheet" type="text/css" href="static/css/admin_styles.css">
+    <style>
+        .message {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+        .form-wrapper form {
+            flex: 1;
+            margin: 0 10px;
+            padding: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        select, input, textarea {
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        a {
+            margin-top: 20px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Category</h2>
+
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form Wrapper -->
+        <div class="form-wrapper">
+
+            <!-- Add Category Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Add Category</h3>
+                    <label for="name">Category Name:</label>
+                    <input type="text" id="name" name="name" required aria-label="Enter category name">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required aria-label="Enter description"></textarea>
+                </div>
+                <button type="submit" name="add">Add Category</button>
+            </form>
+
+            <!-- Update Category Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Update Category</h3>
+                    <label for="update_category_id">Select Category to Update:</label>
+                    <select id="update_category_id" name="update_category_id" required aria-label="Select category to update">
+                        {% for category in categories %}
+                        <option value="{{ category.category_id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="update_name">New Category Name:</label>
+                    <input type="text" id="update_name" name="update_name" required aria-label="Enter new category name">
+                </div>
+                <div class="form-group">
+                    <label for="update_description">New Description:</label>
+                    <textarea id="update_description" name="update_description" required aria-label="Enter new description"></textarea>
+                </div>
+                <button type="submit" name="update">Update Category</button>
+            </form>
+
+            <!-- Drop Category Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Drop Category</h3>
+                    <label for="drop_category_id">Select Category to Drop:</label>
+                    <select id="drop_category_id" name="drop_category_id" required aria-label="Select category to drop">
+                        {% for category in categories %}
+                        <option value="{{ category.category_id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" name="drop">Drop Category</button>
+            </form>
+
+        </div>
+
+        <br>
+        <a href="{{ url_for('index') }}">Back to Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Outfit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #bfdff8;
+            background-size: 1600px 500px;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100%;
+            height: 100%;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 80%;
+            height: 0px;
+        }
+        .outfits {
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .outfit {
+            flex: 0 0 30%;
+            text-align: center;
+            margin: 0 10px;
+        }
+        .outfit img {
+            width: 180px;
+            height: auto;
+            border-radius: 10px;
+        }
+        .outfit:hover {
+            transform: scale(1.05);
+        }
+        .outfit h2 {
+            margin: 10px 0 5px;
+        }
+        .outfit p {
+            margin: 5px 0;
+        }
+        .price {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .arrow {
+            cursor: pointer;
+            font-size: 2em;
+            padding: 0 20px;
+            user-select: none;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 25px;
+            background: #1e90ff;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 0 10px;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #1c86ee;
+        }
+
+
+        #sortMenu {
+            font-size: 1em;
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #1e90ff; /* Light blue border */
+            background-color: #4be3db;
+            color: #333; /* Dark text color for better readability */
+            outline: none; /* Remove default outline */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for better visibility */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+        }
+
+        #sortMenu:hover {
+            border-color: #1c86ee; /* Darker border color on hover */
+        }
+
+        #sortMenu:focus {
+            border-color: #1c86ee; /* Darker border color on focus */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Slightly larger shadow on focus */
+        }
+
+
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            font-size: 1em;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease;
+        }
+
+        .success {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .error {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .color-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .color-item {
+            margin: 10px;
+            text-align: center;
+        }
+        .color-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+        .color-item p {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select Your Outfit</h1>
+        <select id="sortMenu" onchange="sortOutfits()">
+            <option value="default" disabled selected>Sort by</option>
+            <option value="price-high">Price - High to Low</option>
+            <option value="price-low">Price - Low to High</option>
+        </select>
+        <h4>Recommended Colors for {{ predicted_tone }} Skin Tone</h4>
+        <div class="color-container">
+            {% for color in colors %}
+                <div class="color-item">
+                    <img src="{{ color.image }}" alt="{{ color.name }}">
+                    <p>{{ color.name }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="outfits">
+            <div class="arrow" id="leftArrow" onclick="handlePrevious()">&#9664;</div>
+            <div class="outfit" id="outfit1" onclick="selectOutfit(0)">
+                <img src="" alt="Outfit 1">
+                <h2></h2>
+                <p></p>
+                <p class="price"></p> <!-- Added price display -->
+            </div>
+            <div class="outfit" id="outfit2" onclick="selectOutfit(1)">
+                <img src="" alt="Outfit 2">
+                <h2></h2>
+                <p></p>
+                <p class="price"></p> <!-- Added price display -->
+            </div>
+            <div class="outfit" id="outfit3" onclick="selectOutfit(2)">
+                <img src="" alt="Outfit 3">
+                <h2></h2>
+                <p></p>
+                <p class="price"></p> <!-- Added price display -->
+            </div>
+            <div class="arrow" id="rightArrow" onclick="handleNext()">&#9654;</div>
+        </div>
+        <p id="feedbackMessage"></p>
+        <div class="button-container">
+            <button onclick="submitOutfit()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        let outfits = [];
+
+        // Function to fetch outfits from the server
+        function fetchOutfits() {
+            fetch('/outfits')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    outfits = data;
+                    updateOutfits();
+                })
+                .catch(error => {
+                    displayMessage('Failed to fetch outfits from the server.', false);
+                    console.error('Error fetching outfits:', error);
+                });
+        }
+
+        // Function to update the displayed outfits
+        function updateOutfits() {
+            for (let i = 0; i < outfits.length; i++) {
+                const index = (currentIndex + i) % outfits.length;
+                const outfit = outfits[index];
+
+                document.getElementById(`outfit${i+1}`).querySelector('img').src = `data:image/jpeg;base64,${outfit.img}`;
+                document.getElementById(`outfit${i+1}`).querySelector('h2').textContent = outfit.name;
+                document.getElementById(`outfit${i+1}`).querySelector('p').textContent = outfit.description;
+                document.getElementById(`outfit${i+1}`).querySelector('.price').textContent = `Rs. ${outfit.price}`; // Display price in Rs.
+            }
+        }
+
+        // Function to handle the next button click
+        function handleNext() {
+            currentIndex = (currentIndex + 1) % outfits.length;
+            updateOutfits();
+        }
+
+        // Function to handle the previous button click
+        function handlePrevious() {
+            currentIndex = (currentIndex - 1 + outfits.length) % outfits.length;
+            updateOutfits();
+        }
+
+        // Function to select an outfit
+        function selectOutfit(index) {
+            currentIndex = index;
+            displayMessage(`You have selected ${outfits[currentIndex].name}!`, true);
+        }
+
+        // Function to submit the selected outfit
+        function submitOutfit() {
+            displayMessage(`Outfit ${outfits[currentIndex].name} submitted!`, true);
+            window.location.href = '/feedback';
+        }
+
+        // Function to display messages
+        function displayMessage(message, isSuccess) {
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            feedbackMessage.textContent = message;
+            feedbackMessage.style.color = isSuccess ? 'green' : 'red';
+        }
+
+        // Function to sort outfits based on selected option
+        function sortOutfits() {
+            const sortValue = document.getElementById('sortMenu').value;
+            if (sortValue === 'price-high') {
+                outfits.sort((a, b) => b.price - a.price);
+            } else if (sortValue === 'price-low') {
+                outfits.sort((a, b) => a.price - b.price);
+            }
+            updateOutfits();
+        }
+
+        // Initialize the display and fetch outfits
+        window.onload = function() {
+            fetchOutfits();
+        };
+    </script>
+</body>
+</html>

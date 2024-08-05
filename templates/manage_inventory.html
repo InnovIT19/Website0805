@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Inventory</title>
+    <link rel="stylesheet" type="text/css" href="static/css/admin_styles.css">
+    <style>
+        .message {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+        .form-wrapper form {
+            flex: 1;
+            margin: 0 10px;
+            padding: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        select, input, textarea {
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        a {
+            margin-top: 20px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Inventory</h2>
+
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form Wrapper -->
+        <div class="form-wrapper">
+
+            <!-- Add Inventory Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Add Inventory</h3>
+                    <label for="category_id">Select Category:</label>
+                    <select id="category_id" name="category_id" required aria-label="Select category">
+                        {% for category in categories %}
+                        <option value="{{ category.category_id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" required aria-label="Enter quantity">
+                </div>
+                <button type="submit" name="add">Add Inventory</button>
+            </form>
+
+            <!-- Update Inventory Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Update Inventory</h3>
+                    <label for="update_inventory_id">Select Inventory to Update:</label>
+                    <select id="update_inventory_id" name="update_inventory_id" required aria-label="Select inventory to update">
+                        {% for inventory in inventories %}
+                        <option value="{{ inventory.inventory_id }}">{{ inventory.category_name }} - Quantity: {{ inventory.quantity }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="update_quantity">New Quantity:</label>
+                    <input type="number" id="update_quantity" name="update_quantity" required aria-label="Enter new quantity">
+                </div>
+                <button type="submit" name="update_inventory">Update Inventory</button>
+            </form>
+
+            <!-- Drop Inventory Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Drop Inventory</h3>
+                    <label for="drop_inventory_id">Select Inventory to Drop:</label>
+                    <select id="drop_inventory_id" name="drop_inventory_id" required aria-label="Select inventory to drop">
+                        {% for inventory in inventories %}
+                        <option value="{{ inventory.inventory_id }}">{{ inventory.category_name }} - Quantity: {{ inventory.quantity }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" name="drop_inventory">Drop Inventory</button>
+            </form>
+
+        </div>
+
+        <br>
+        <a href="{{ url_for('index') }}">Back to Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>

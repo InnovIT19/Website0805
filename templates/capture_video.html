@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Video</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            background: url('../static/images/back_img.jpeg') no-repeat center center;
+            background-size: cover;
+        }
+
+        .left-container {
+            width: 60%;
+
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .right-container {
+            width: 40%;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .message-box {
+            width: 80%;
+            height: 70%;
+            background-color: rgba(51, 71, 100, 0.6);
+            padding: 20px;
+            margin: auto;
+            border-radius: 4px;
+            box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+            align-content: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .message-box ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .message-box ul li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 20px;
+            text-align: left;
+            font-size: 28px;
+            color: #fff;
+        }
+        .message-box ul li::before {
+            content: "★ ";
+            position: absolute;
+            left: 0;
+            color: #007bff;
+        }
+
+        video, canvas {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            font-size: 1em;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease;
+        }
+
+        .success {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .error {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="left-container">
+        <h1>Capture Video</h1>
+        <video id="video" width="540" height="400" autoplay></video>
+        <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+        <div class="button-container">
+            <button id="startButton">Start</button>
+            <button id="resetButton">Reset</button>
+            <button id="submitButton">Submit</button>
+        </div>
+        <div id="messages"></div>
+    </div>
+    <div class="right-container">
+        <div class="message-box">
+            <ul>
+                <li>When you're ready, please press the <b>"Start"</b> button in the screen</li>
+                <li>Screen will start to capture the video</li>
+                <li>You have to turn around to take a video for better recommendations.</li>
+                <li> After 30s of time,you have to press <b>"Submit"</b></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const submitButton = document.getElementById('submitButton');
+        const messagesDiv = document.getElementById('messages');
+
+        let stream;
+        let snapshots = [];
+        let intervalId;
+
+        async function startVideo() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                submitButton.classList.add('disabled'); // Disable submit button initially
+            } catch (error) {
+                displayMessage('Error accessing media devices.', false);
+                console.error('Error accessing media devices.', error);
+            }
+        }
+
+        function takeSnapshots() {
+            const context = canvas.getContext('2d');
+            intervalId = setInterval(() => {
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const dataURL = canvas.toDataURL('image/jpeg');
+                snapshots.push(dataURL);
+                if (snapshots.length >= 20) {
+                    clearInterval(intervalId);
+                    submitButton.classList.remove('disabled'); // Enable submit button after snapshots are taken
+                }
+            }, 1500); // Take a snapshot every 1.5 seconds
+        }
+
+        startButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to start capturing video?')) {
+                snapshots = [];
+                startVideo();
+                setTimeout(() => {
+                    takeSnapshots();
+                    setTimeout(() => {
+                        stream.getTracks().forEach(track => track.stop());
+                    }, 30000); // Stop video after 30 seconds
+                }, 1000);
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset?')) {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                clearInterval(intervalId);
+                snapshots = [];
+                startVideo();
+                submitButton.classList.add('disabled'); // Disable submit button on reset
+            }
+        });
+
+        submitButton.addEventListener('click', () => {
+            if (snapshots.length === 0) {
+                displayMessage('Please capture video before submitting.', false);
+                return;
+            }
+
+            if (confirm('Are you sure you want to submit?')) {
+                fetch('/submit_snapshots', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ snapshots })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        displayMessage(data.message, true);
+                        setTimeout(() => {
+                            window.location.href = '/outfit';
+                        }, 2000); // Redirect after 2 seconds
+                    } else {
+                        displayMessage('Failed to submit snapshots', false);
+                    }
+                })
+                .catch(error => {
+                    displayMessage('Error submitting snapshots', false);
+                    console.error('Error:', error);
+                });
+            }
+        });
+
+        function displayMessage(message, isSuccess) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isSuccess ? 'success' : 'error';
+            messageDiv.textContent = message;
+            messagesDiv.innerHTML = ''; // Clear previous messages
+            messagesDiv.appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Material</title>
+    <link rel="stylesheet" type="text/css" href="static/css/admin_styles.css">
+    <style>
+        .message {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+        .form-wrapper form {
+            flex: 1;
+            margin: 0 10px;
+            padding: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        select, input, textarea {
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        a {
+            margin-top: 20px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Material</h2>
+
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form Wrapper -->
+        <div class="form-wrapper">
+
+            <!-- Add Material Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Add Material</h3>
+                    <label for="name">Material Name:</label>
+                    <input type="text" id="name" name="name" required aria-label="Enter material name">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required aria-label="Enter description"></textarea>
+                </div>
+                <button type="submit" name="add">Add Material</button>
+            </form>
+
+            <!-- Update Material Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Update Material</h3>
+                    <label for="update_material_id">Select Material to Update:</label>
+                    <select id="update_material_id" name="update_material_id" required aria-label="Select material to update">
+                        {% for material in materials %}
+                        <option value="{{ material.material_id }}">{{ material.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="update_name">New Material Name:</label>
+                    <input type="text" id="update_name" name="update_name" required aria-label="Enter new material name">
+                </div>
+                <div class="form-group">
+                    <label for="update_description">New Description:</label>
+                    <textarea id="update_description" name="update_description" required aria-label="Enter new description"></textarea>
+                </div>
+                <button type="submit" name="update">Update Material</button>
+            </form>
+
+            <!-- Drop Material Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <h3>Drop Material</h3>
+                    <label for="drop_material_id">Select Material to Drop:</label>
+                    <select id="drop_material_id" name="drop_material_id" required aria-label="Select material to drop">
+                        {% for material in materials %}
+                        <option value="{{ material.material_id }}">{{ material.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" name="drop">Drop Material</button>
+            </form>
+
+        </div>
+
+        <br>
+        <a href="{{ url_for('index') }}">Back to Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>

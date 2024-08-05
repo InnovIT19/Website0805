@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Outfit Category</title>
+    <!-- Add any CSS files or stylesheets here -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            background-size: 1700px 612px;
+        }
+
+        .container {
+            text-align: center;
+            background-image: url('../static/images/about-us-page-heading.jpg');
+            width: 1600px;
+            height: 500px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            color: white; /* Set text color to white */
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap; /* Enable wrapping for responsive layout */
+            justify-content: space-around; /* Distribute items with space around */
+            gap: 20px; /* Space between items */
+            margin-top: 20px;
+        }
+
+        .category {
+            text-align: center;
+            cursor: pointer;
+            padding: 10px; /* Add padding to each category for spacing */
+            background-color: #000000; /* Light background color */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            transition: transform 0.3s ease; /* Smooth hover effect */
+        }
+
+        .category:hover {
+            transform: scale(1.05); /* Scale up slightly on hover */
+        }
+
+        .category img {
+            width: 150px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px; /* Rounded corners for images */
+            margin-bottom: 10px; /* Space below image */
+        }
+
+        .highlight {
+            border: 2px solid blue;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            font-size: 1em;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease;
+        }
+
+        .success {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .error {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .confirmation {
+            background: #ffc107;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        #messages {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select Your Outfit Category</h1>
+        <div id="messages"></div>
+        <div class="categories">
+            <div class="category" id="upper-body" onclick="selectCategory('upper-body')">
+                <img src="../static/images/category/upperbody.png" alt="Upper Body">
+                <p>Upper-body</p>
+            </div>
+            <div class="category" id="lower-body" onclick="selectCategory('lower-body')">
+                <img src="../static/images/category/lowerbody.png" alt="Lower Body">
+                <p>Lower-body</p>
+            </div>
+            <div class="category" id="full-body" onclick="selectCategory('full-body')">
+                <img src="../static/images/category/fullbody (2).png" alt="Full Body">
+                <p>Full-body</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function displayMessage(message, isSuccess) {
+            const messageDiv = document.getElementById('messages');
+            messageDiv.innerHTML = `<p class="${isSuccess ? 'success' : 'error'}">${message}</p>`;
+        }
+
+        function selectCategory(categoryId) {
+            // Remove highlight from all categories
+            document.getElementById('upper-body').classList.remove('highlight');
+            document.getElementById('lower-body').classList.remove('highlight');
+            document.getElementById('full-body').classList.remove('highlight');
+
+            // Add highlight to the selected category
+            document.getElementById(categoryId).classList.add('highlight');
+
+            // Show confirmation message
+            const confirmationMessage = `Selected ${categoryId} category. Proceed?`;
+            const confirmationHtml = `<p class="confirmation">${confirmationMessage}</p>`;
+            const messageDiv = document.getElementById('messages');
+            messageDiv.innerHTML = confirmationHtml;
+
+            // Wait for user confirmation
+            if (confirm(confirmationMessage)) {
+                // Redirect to capture_video.html after confirming
+                window.location.href = '/capture_video?category=' + categoryId; // Adjust this URL as per your Flask route
+            } else {
+                displayMessage('Selection cancelled.', false);
+            }
+        }
+
+        // Voice recognition part
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.onstart = function() {
+            console.log('Voice recognition activated. Try speaking into the microphone.');
+        };
+
+        recognition.onspeechend = function() {
+            console.log('You stopped talking.');
+            recognition.stop();
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            console.log('Result received: ' + transcript);
+
+            if (transcript.includes('upper body')) {
+                selectCategory('upper-body');
+                displayMessage('Upper body category selected.', true);
+            } else if (transcript.includes('lower body')) {
+                selectCategory('lower-body');
+                displayMessage('Lower body category selected.', true);
+            } else if (transcript.includes('full body')) {
+                selectCategory('full-body');
+                displayMessage('Full body category selected.', true);
+            } else {
+                displayMessage('Command not recognized. Please say "upper body", "lower body", or "full body".', false);
+            }
+        };
+
+        // Start recognition automatically
+        recognition.start();
+    </script>
+</body>
+</html>

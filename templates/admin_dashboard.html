@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('../static/images/admin_img.jpg');
+            background-size: 1400px 612px;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            margin-left: 400px;
+            margin-right: 400px;
+            padding: 50px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+        }
+        h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        a {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: #007bff;
+            font-size: 1.1em;
+            padding: 15px;
+            margin: 10px 0;
+            margin-left: 15px;
+            margin-right: 15px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        a:active {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Dashboard</h2>
+        <p>Welcome, {{ session['username'] }}!</p>
+        <a href="{{ url_for('manage_material') }}">Manage Material</a>
+        <a href="{{ url_for('manage_category') }}">Manage Category</a>
+        <a href="{{ url_for('manage_inventory') }}">Manage Inventory</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>

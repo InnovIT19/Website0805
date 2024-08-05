@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <
+    <title>Admin Login</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('../static/images/admin_img.jpg');
+            background-size: 1400px 612px;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 200px;
+            margin-left: 400px;
+            margin-right: 400px;
+            padding: 50px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            align: center;
+        }
+        h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        .alert {
+            padding: 20px;
+            background-color: #f44336; /* Red */
+            color: white;
+            margin-bottom: 15px;
+        }
+        .alert.success {background-color: #4CAF50;}
+        .alert.warning {background-color: #ff9800;}
+        .alert.danger {background-color: #f44336;}
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .closebtn:hover {
+            color: black;
+        }
+        .flashes {
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .flashes li {
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 3px;
+        }
+
+        .flashes .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .flashes .error {
+            background-color: #f2dede;
+            color: #a94442;
+    </style>
+    <!-- Additional CSS Files -->
+
+    <link rel="stylesheet" href="static/css/admin_styles.css">
+
+    </head>
+    <body>
+    <!-- ***** Login ***** -->
+    <div class="login-container">
+        <form id="login-form" action="{{ url_for('login') }}" method="post">
+            <h2>Admin Login</h2>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Messages will be displayed here -->
+        <div id="messages"></div>
+
+        <!-- Flash messages from Flask -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- jQuery script for displaying messages -->
+    <script>
+        $(document).ready(function() {
+            $('#login-form').submit(function(event) {
+                event.preventDefault(); // Prevent form submission
+                var formData = {
+                    'username': $('#username').val(),
+                    'password': $('#password').val()
+                };
+
+                // AJAX request to handle form submission
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: formData,
+                    dataType: 'json',
+                    encode: true
+                })
+                .done(function(data) {
+                    // Display success message
+                    $('#messages').html('<p class="success">' + data.message + '</p>');
+                    // Redirect to next page or perform actions after showing message
+                    setTimeout(function() {
+                        window.location.href = '/next_page'; // Adjust the URL as per your route
+                    }, 2000); // 2 seconds delay for message visibility
+                })
+                .fail(function(data) {
+                    // Display error message
+                    $('#messages').html('<p class="error">' + data.responseJSON.error + '</p>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

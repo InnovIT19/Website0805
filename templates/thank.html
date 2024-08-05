@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Capture Success</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color:#bfdff8;
+    }
+
+
+        .container {
+            position: relative;
+            max-width: 1000px;
+            text-align: center;
+        }
+
+        .content-box {
+            width: 900px;
+            height: 375px;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 100px; /* Adjust as needed to fit below the images */
+            position: relative;
+        }
+
+        .content-box p {
+            margin: 20px 0;
+            font-size: 42px;
+            color: #000000;
+        }
+
+        .video-icon {
+            display: block;
+            margin: 0 auto 20px;
+            width: 420px; /* Adjust as needed */
+            height: 100px;
+        }
+
+        .next-button {
+            background-color: #000000;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px 20px;
+            font-size: 32px;
+            cursor: pointer;
+        }
+
+        .next-button:hover {
+            background-color: #3b6db7;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content-box">
+            <p><b>Thank You</b> for Sharing your<br> valuable feedback with Us.</p>
+            <img src="static/images/feedback/feedback.jpeg" alt="Feedback Icon" class="video-icon">
+            <button class="next-button" onclick="navigateToHome()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        function navigateToHome() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

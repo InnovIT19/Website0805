@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Number Registration</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('../static/images/04.jpg') no-repeat center center fixed;
+            background-size: 1700px 612px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        .digit-box {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            font-size: 20px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            background: #fff;
+            color: #000;
+            transition: background 0.3s, color 0.3s;
+        }
+        .digit-box:focus {
+            background: #2575fc;
+            color: #fff;
+        }
+        .instructions {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        .submit-button, .reset-button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .submit-button {
+            background: #28a745;
+            color: #fff;
+        }
+        .reset-button {
+            background: #dc3545;
+            color: #fff;
+        }
+        .submit-button:hover, .reset-button:hover {
+            transform: translateY(-2px);
+        }
+        .submit-button:active, .reset-button:active {
+            transform: translateY(0);
+        }
+        .message {
+            display: none;
+            margin-top: 20px;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #28a745;
+        }
+        .error {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enter Your phone number</h1>
+        <div>
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+            <input type="text" class="digit-box" maxlength="1" oninput="moveToNext(this, event)">
+        </div>
+        <div class="instructions">Input your phone number to register.</div>
+        <div class="button-container">
+            <button type="button" class="submit-button" onclick="submitInput()">Submit</button>
+            <button type="button" class="reset-button" onclick="resetInput()">Reset</button>
+        </div>
+        <div class="message success" id="success-message"></div>
+        <div class="message error" id="error-message"></div>
+    </div>
+
+    <script>
+        const digits = document.querySelectorAll('.digit-box');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+
+        // Ensure only integer values are entered
+        digits.forEach(digit => {
+            digit.addEventListener('input', (event) => {
+                if (digit.value.match(/\D/)) {
+                    displayMessage(errorMessage, 'Please enter only digits.');
+                    digit.value = ''; // Clear invalid input
+                } else {
+                    moveToNext(digit, event);
+                }
+            });
+        });
+
+        function submitInput() {
+            const phoneNumber = Array.from(digits).map(digit => digit.value).join('');
+            if (phoneNumber.length === 10) {
+                fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone_number: phoneNumber }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.message) {
+                        displayMessage(successMessage, data.message);
+                        localStorage.setItem('phone_number', phoneNumber); // Save phone number to local storage
+                        setTimeout(() => {
+                            window.location.href = '/gender'; // Redirect to the gender page
+                        }, 2000); // Redirect after 2 seconds
+                    } else {
+                        displayMessage(errorMessage, data.error);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    displayMessage(errorMessage, 'Failed to register. Please try again later.');
+                });
+            } else {
+                displayMessage(errorMessage, 'Please enter a 10-digit phone number.');
+            }
+        }
+
+        function resetInput() {
+            digits.forEach(digit => digit.value = '');
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+
+        function displayMessage(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000); // Hide message after 3 seconds
+        }
+
+        function moveToNext(current, event) {
+            if (event.inputType === "insertText" && current.value.length === current.maxLength) {
+                let next = current.nextElementSibling;
+                if (next && next.classList.contains('digit-box')) {
+                    next.focus();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

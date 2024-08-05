@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-image: url('../static/images/bimg.jpg');
+            background-size: cover;
+            margin: 0;
+        }
+        h1 {
+            font-family: 'Arial', sans-serif; /* Custom font */
+            font-size: 3rem; /* Font size */
+            color: #f52739; /* Font color */
+            text-align: center; /* Center align the text */
+            margin-top: 20px; /* Margin at the top */
+            margin-bottom: 20px; /* Margin at the bottom */
+            letter-spacing: 1px; /* Spacing between letters */
+            text-transform: uppercase; /* Transform text to uppercase */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Shadow for text */
+            padding-bottom: 10px; /* Padding at the bottom */
+            width: fit-content; /* Fit content width */
+            margin-left: auto; /* Center align the element */
+            margin-right: auto; /* Center align the element */
+
+        }
+
+
+        .welcome-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            margin-bottom: 50px;
+            margin-left:250px;
+            margin-top:10px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 50px;
+            margin-left: 100px;
+            margin-right: 100px;
+            margin-bottom:50px;
+
+
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #000080; /* Default background color */
+            color: white;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .register:hover, .login:hover, .admin-login:hover {
+         background-color: #545ee3; /* Dark blue transition color */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to Our <br> Fashion Design Recommendation System</h1>
+    <div class="welcome-container">
+        <div class="button-container">
+            <button class="register" onclick="window.location.href='/register'">Register</button>
+            <button class="login" onclick="window.location.href='/user_login'">Login</button>
+            <button class="admin-login" onclick="window.location.href='/admin_login'">Admin Login</button>
+        </div>
+    </div>
+</body>
+</html>

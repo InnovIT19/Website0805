@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('../static/images/wallpaper.jpeg');
+            background-size: cover;
+            height: 100vh;
+            background-color: #bfdff8;
+            margin: 0;
+        }
+        .container {
+            position: relative;
+            width: 1000px;
+            height: 400px;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .feedback-box {
+            flex: 1;
+            padding: 20px;
+            height: 200px;
+            background-color: rgba(224, 224, 255, 0.8);
+            border-radius: 10px;
+            text-align: center;
+        }
+        .feedback-box h2 {
+            margin-bottom: 20px;
+        }
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .star {
+            font-size: 4rem;
+            color: #888;
+            cursor: pointer;
+        }
+        .star.selected {
+            color: #5555ff;
+        }
+        .image-container {
+            position: absolute;
+            left: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .image-container img {
+            height: 440px;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+            border-radius: 25px;
+        }
+        .reset {
+            background-color: red;
+            color: white;
+        }
+        .submit {
+            background-color: green;
+            color: white;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: red;
+        }
+        .error {
+            background-color: red;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img src="../static/images/feedback/officewomen.png" alt="Outfit">
+        </div>
+        <div class="feedback-box">
+            <h2 id="feedback-title">Feedback for Color</h2>
+            <div class="stars" id="star-container">
+                <span class="star" onclick="selectStar(1)">★</span>
+                <span class="star" onclick="selectStar(2)">★</span>
+                <span class="star" onclick="selectStar(3)">★</span>
+                <span class="star" onclick="selectStar(4)">★</span>
+                <span class="star" onclick="selectStar(5)">★</span>
+            </div>
+            <div class="buttons">
+                <button class="submit" onclick="submitFeedback()" style="display: none;">Submit</button>
+                <button class="reset" onclick="resetFeedback()" style="display: none;">Reset</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const feedbackTypes = ['Color', 'Size', 'Outfit', 'Overall Appearance'];
+        let feedbackResults = {
+            color: 0,
+            size: 0,
+            outfit: 0,
+            overall_appearance: 0
+        };
+        let currentFeedback = 0;
+        let currentRating = 0;
+
+        function selectStar(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                star.classList.toggle('selected', index < rating);
+            });
+
+            updateFeedbackResults();
+            checkFeedbackCompletion();
+        }
+
+        function updateFeedbackResults() {
+            switch (currentFeedback) {
+                case 0:
+                    feedbackResults.color = currentRating;
+                    break;
+                case 1:
+                    feedbackResults.size = currentRating;
+                    break;
+                case 2:
+                    feedbackResults.outfit = currentRating;
+                    break;
+                case 3:
+                    feedbackResults.overall_appearance = currentRating;
+                    break;
+            }
+        }
+
+        function checkFeedbackCompletion() {
+            if (currentRating > 0 && currentFeedback < feedbackTypes.length - 1) {
+                setTimeout(nextFeedback, 1000); // Move to next feedback after a short delay
+            } else if (currentFeedback === feedbackTypes.length - 1) {
+                document.querySelector('.submit').style.display = 'inline-block';
+                document.querySelector('.reset').style.display = 'inline-block';
+            }
+        }
+
+        function nextFeedback() {
+            currentFeedback++;
+            document.getElementById('feedback-title').textContent = `Feedback for ${feedbackTypes[currentFeedback]}`;
+            resetStars(); // reset stars
+            currentRating = 0; // reset current rating
+        }
+
+        function resetFeedback() {
+            currentFeedback = 0;
+            currentRating = 0;
+            feedbackResults = {
+                color: 0,
+                size: 0,
+                outfit: 0,
+                overall_appearance: 0
+            };
+            document.getElementById('feedback-title').textContent = `Feedback for ${feedbackTypes[currentFeedback]}`;
+            document.querySelector('.submit').style.display = 'none';
+            document.querySelector('.reset').style.display = 'none';
+            resetStars();
+        }
+
+        function resetStars() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => star.classList.remove('selected'));
+        }
+
+        function submitFeedback() {
+            fetch('/feedback', {  // Updated to match the route in app.py
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(feedbackResults)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                window.location.href = '/thank'; // Redirect to thank you page
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
